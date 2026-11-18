@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Telegram Web</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%232481cc'><path d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z'/></svg>">
+</head>
+<body class="theme-dark sidebar-left layout-full">
+  <div class="app-container" id="appContainer">
+    
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+      <!-- Top header with menu, search & quick actions -->
+      <div class="sidebar-header">
+        <button class="icon-btn menu-btn" id="menuBtn" title="Menu & Settings">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M3 18h18v-2H3v2zm0-5h18v-2H3v2zm0-7v2h18V6H3z"/>
+          </svg>
+        </button>
+        <div class="search-box">
+          <svg class="search-icon" viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+          </svg>
+          <input type="text" id="searchInput" placeholder="Search chats..." autocomplete="off">
+        </div>
+        <!-- Quick position swap button -->
+        <button class="icon-btn" id="posQuickBtn" title="Flip Sidebar Position (Left / Right)">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M6.99 11L3 15l3.99 4v-3H14v-2H6.99v-3zM21 9l-3.99-4v3H10v2h7.01v3L21 9z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Chat Categories Tabs -->
+      <div class="folder-tabs">
+        <button class="tab active" data-folder="all">All</button>
+        <button class="tab" data-folder="online">Online <span class="tab-badge" id="onlineBadge">0</span></button>
+        <button class="tab" data-folder="groups">Groups</button>
+        <button class="tab" data-folder="personal">Personal</button>
+        <button class="tab" data-folder="bots">Bots</button>
+      </div>
+
+      <!-- Chat List -->
+      <div class="chat-list" id="chatList">
+        <!-- Injected via script.js -->
+      </div>
+
+      <!-- Connection status banner & My Profile Pill -->
+      <div class="sidebar-footer">
+        <div class="my-profile-pill" id="myProfilePill" title="Click to edit your nickname">
+          <span class="my-avatar" id="myAvatar">👤</span>
+          <span class="my-name" id="myName">You</span>
+        </div>
+        <div class="server-status" id="serverStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">Connecting...</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- MAIN CHAT CONTAINER -->
+    <main class="chat-area" id="chatArea">
+      <!-- Authentic Telegram Doodle Wallpaper -->
+      <div class="chat-wallpaper"></div>
+
+      <!-- Chat Header -->
+      <header class="chat-header">
+        <button class="icon-btn back-btn" id="backBtn" title="Back">
+          <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+            <path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/>
+          </svg>
+        </button>
+        
+        <div class="chat-header-avatar" id="activeAvatar">TG</div>
+        
+        <div class="chat-header-info" id="activeInfo">
+          <h2 class="chat-header-title" id="activeTitle">Dev Telegram Community</h2>
+          <span class="chat-header-subtitle" id="activeSubtitle">online</span>
+        </div>
+
+        <div class="chat-header-actions">
+          <!-- Auth / Login Modal Button -->
+          <button class="icon-btn" id="loginBtn" title="Telegram Login (QR Code / Phone)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/>
+            </svg>
+          </button>
+
+          <!-- Quick Theme Toggle Button -->
+          <button class="icon-btn" id="themeQuickBtn" title="Toggle Light / Dark Theme">
+            <svg id="themeIcon" viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M12 3a9 9 0 1 0 9 9c0-.46-.04-.92-.1-1.36a5.389 5.389 0 0 1-4.4 2.26 5.403 5.403 0 0 1-3.14-9.8c-.44-.06-.9-.1-1.36-.1z"/>
+            </svg>
+          </button>
+          
+          <!-- Layout Position Settings Button -->
+          <button class="icon-btn" id="settingsBtn" title="Settings (Themes & Position)">
+            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+              <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.45.17-.48.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- Sticky Pinned Message Banner -->
+      <div class="pinned-banner" id="pinnedBanner">
+        <span class="pin-icon">📌</span>
+        <div class="pinned-content" id="pinnedContent">
+          <div class="pinned-title">Pinned Message</div>
+          <div class="pinned-text" id="pinnedText">Welcome to the Dev Community! Tap to jump to original message.</div>
+        </div>
+        <button class="icon-btn unpin-btn" id="unpinBtn" title="Unpin message">&times;</button>
+      </div>
+
+      <!-- Message History Viewport -->
+      <div class="message-feed-container">
+        <div class="message-feed" id="messageFeed">
+          <!-- Messages rendered dynamically -->
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div class="typing-indicator" id="typingIndicator">
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="dot"></span>
+        <span class="typing-text" id="typingText">someone is typing...</span>
+      </div>
+
+      <!-- Reply Preview Bar -->
+      <div class="reply-bar" id="replyBar">
+        <div class="reply-bar-border"></div>
+        <div class="reply-bar-content">
+          <div class="reply-bar-name" id="replyBarName">User</div>
+          <div class="reply-bar-text" id="replyBarText">Message</div>
+        </div>
+        <button class="icon-btn close-reply-btn" id="closeReplyBtn">&times;</button>
+      </div>
+
+      <!-- Voice Recording Progress Bar -->
+      <div class="voice-recording-bar" id="voiceRecordingBar">
+        <div class="pulse-red-dot"></div>
+        <span class="recording-timer" id="recordingTimer">0:00</span>
+        <span class="recording-label">Recording Voice Message...</span>
+        <button class="cancel-recording-btn" id="cancelRecordingBtn">Cancel</button>
+      </div>
+
+      <!-- Message Input Area -->
+      <footer class="chat-input-container">
+        <div class="chat-input-inner">
+          <!-- Hidden file input for media attachments -->
+          <input type="file" id="mediaFileInput" accept="image/*" style="display: none;">
+
+          <button class="icon-btn attach-btn" id="attachBtn" title="Attach photo or media">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5a2.5 2.5 0 0 1 5 0v10.5c0 .83-.67 1.5-1.5 1.5s-1.5-.67-1.5-1.5V6H9v9.5a3 3 0 0 0 6 0V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5V6h-1.5z"/>
+            </svg>
+          </button>
+
+          <div class="input-wrapper">
+            <textarea id="messageInput" rows="1" placeholder="Write a message..." autofocus></textarea>
+            <button class="icon-btn emoji-btn" id="emojiBtn" title="Quick emoji">
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm3.5-9c.83 0 1.5-.67 1.5-1.5S16.33 8 15.5 8 14 8.67 14 9.5s.67 1.5 1.5 1.5zm-7 0c.83 0 1.5-.67 1.5-1.5S9.33 8 8.5 8 7 8.67 7 9.5 7.67 11 8.5 11zm3.5 6.5c2.33 0 4.31-1.46 5.11-3.5H6.89c.8 2.04 2.78 3.5 5.11 3.5z"/>
+              </svg>
+            </button>
+          </div>
+
+          <!-- Dynamic Action Button: Voice note when empty, Send plane when typing -->
+          <button class="icon-btn voice-btn" id="voiceBtn" title="Hold or click to record voice note">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3zm5-3c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+            </svg>
+          </button>
+          <button class="icon-btn send-btn" id="sendBtn" title="Send message" style="display: none;">
+            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+              <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+            </svg>
+          </button>
+        </div>
+      </footer>
+    </main>
+
+    <!-- SETTINGS & CUSTOMIZATION DRAWER -->
+    <div class="drawer settings-drawer" id="settingsDrawer">
+      <div class="drawer-header">
+        <h3>Settings & Themes</h3>
+        <button class="icon-btn close-drawer" id="closeSettings">&times;</button>
+      </div>
+      <div class="drawer-body">
+        
+        <!-- Profile Identity Section -->
+        <div class="drawer-section">
+          <label>YOUR CHAT PROFILE</label>
+          <div class="profile-edit-box">
+            <input type="text" id="usernameInput" placeholder="Enter your nickname..." maxlength="20">
+            <button class="btn-primary" id="saveProfileBtn">Save</button>
+          </div>
+          <span class="setting-hint">Your name appears live when chatting with others.</span>
+        </div>
+
+        <!-- Position & Layout Section -->
+        <div class="drawer-section">
+          <label>SIDEBAR POSITION</label>
+          <div class="choice-group" id="posChoiceGroup">
+            <button class="choice-btn active" data-pos="sidebar-left">👈 Left Sidebar</button>
+            <button class="choice-btn" data-pos="sidebar-right">👉 Right Sidebar</button>
+          </div>
+        </div>
+
+        <div class="drawer-section">
+          <label>CHAT VIEW WIDTH</label>
+          <div class="choice-group" id="widthChoiceGroup">
+            <button class="choice-btn active" data-width="layout-full">Full Width</button>
+            <button class="choice-btn" data-width="layout-centered">Centered (Desktop)</button>
+          </div>
+        </div>
+
+        <!-- Themes Section -->
+        <div class="drawer-section">
+          <label>THEME PALETTE</label>
+          <div class="theme-grid" id="themeGrid">
+            <div class="theme-card active" data-theme="theme-dark">
+              <div class="theme-swatch" style="background: #0e1621; border: 2px solid #2481cc;"></div>
+              <span>Night Blue</span>
+            </div>
+            <div class="theme-card" data-theme="theme-light">
+              <div class="theme-swatch" style="background: #f0f2f5; border: 2px solid #2481cc;"></div>
+              <span>Day Light</span>
+            </div>
+            <div class="theme-card" data-theme="theme-amoled">
+              <div class="theme-swatch" style="background: #000000; border: 2px solid #00b0ff;"></div>
+              <span>Midnight</span>
+            </div>
+            <div class="theme-card" data-theme="theme-emerald">
+              <div class="theme-swatch" style="background: #0c1914; border: 2px solid #2ecc71;"></div>
+              <span>Emerald</span>
+            </div>
+            <div class="theme-card" data-theme="theme-sunset">
+              <div class="theme-swatch" style="background: #1f1618; border: 2px solid #ff6b6b;"></div>
+              <span>Sunset</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Account Actions -->
+        <div class="drawer-section">
+          <label>AUTHENTICATION</label>
+          <button class="choice-btn" id="openLoginFromSettings" style="width: 100%; justify-content: center;">
+            🔐 Open Telegram Login Screen
+          </button>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- USER INFO / PROFILE DRAWER -->
+    <div class="drawer user-drawer" id="userDrawer">
+      <div class="drawer-header">
+        <h3>User Info</h3>
+        <button class="icon-btn close-drawer" id="closeDrawer">&times;</button>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-avatar" id="drawerAvatar">TG</div>
+        <h4 id="drawerName">Telegram Assistant</h4>
+        <p class="drawer-username" id="drawerUsername">@telegram_bot</p>
+        <div class="drawer-section">
+          <label>Bio</label>
+          <p id="drawerBio">Official simulated assistant for your custom Telegram Web client.</p>
+        </div>
+        <div class="drawer-section" id="drawerActionSection"></div>
+      </div>
+    </div>
+
+    <!-- FULLSCREEN PHOTO LIGHTBOX -->
+    <div class="lightbox-modal" id="lightboxModal">
+      <button class="icon-btn lightbox-close" id="lightboxClose">&times;</button>
+      <div class="lightbox-content">
+        <img id="lightboxImg" src="" alt="Fullscreen image">
+      </div>
+    </div>
+
+    <!-- AUTHENTIC TELEGRAM LOGIN MODAL -->
+    <div class="login-modal" id="loginModal">
+      <div class="login-box">
+        <button class="icon-btn login-close" id="loginClose">&times;</button>
+        
+        <div class="login-logo">
+          <svg viewBox="0 0 24 24" width="56" height="56" fill="#2481cc">
+            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69a.2.2 0 00-.05-.18c-.06-.05-.14-.03-.21-.02-.09.02-1.49.95-4.22 2.79-.4.27-.76.41-1.08.4-.36-.01-1.04-.2-1.55-.37-.63-.2-1.12-.31-1.08-.66.02-.18.27-.36.74-.55 2.92-1.27 4.86-2.11 5.83-2.51 2.78-1.16 3.35-1.36 3.73-1.36.08 0 .27.02.39.12.1.08.13.19.14.27-.01.06.01.24 0 .38z"/>
+          </svg>
+        </div>
+
+        <h3 class="login-heading">Log in to Telegram</h3>
+        <p class="login-subheading">Choose your preferred login method</p>
+
+        <!-- Login Tabs: QR Code vs Phone -->
+        <div class="login-tabs">
+          <button class="login-tab active" data-tab="qr">QR Code</button>
+          <button class="login-tab" data-tab="phone">Phone Number</button>
+        </div>
+
+        <!-- Tab 1: QR Code -->
+        <div class="login-tab-content active" id="tabQR">
+          <div class="qr-container">
+            <div class="qr-scan-line"></div>
+            <div class="mock-qr-code">
+              <!-- SVG QR Pattern -->
+              <svg viewBox="0 0 100 100" width="160" height="160">
+                <rect width="100" height="100" fill="#ffffff" rx="8"/>
+                <!-- Corner Eyes -->
+                <rect x="10" y="10" width="22" height="22" fill="#111111" rx="4"/>
+                <rect x="14" y="14" width="14" height="14" fill="#ffffff" rx="2"/>
+                <rect x="17" y="17" width="8" height="8" fill="#2481cc" rx="2"/>
+
+                <rect x="68" y="10" width="22" height="22" fill="#111111" rx="4"/>
+                <rect x="72" y="14" width="14" height="14" fill="#ffffff" rx="2"/>
+                <rect x="75" y="17" width="8" height="8" fill="#2481cc" rx="2"/>
+
+                <rect x="10" y="68" width="22" height="22" fill="#111111" rx="4"/>
+                <rect x="14" y="72" width="14" height="14" fill="#ffffff" rx="2"/>
+                <rect x="17" y="75" width="8" height="8" fill="#2481cc" rx="2"/>
+
+                <!-- Data Matrix Dots -->
+                <rect x="36" y="12" width="6" height="6" fill="#222"/>
+                <rect x="46" y="18" width="6" height="6" fill="#222"/>
+                <rect x="56" y="12" width="6" height="6" fill="#222"/>
+                <rect x="36" y="36" width="28" height="28" fill="#2481cc" rx="4"/>
+                <path d="M44 50 L52 44 L60 54 L52 52 Z" fill="#ffffff"/>
+                <rect x="12" y="44" width="8" height="8" fill="#222"/>
+                <rect x="78" y="44" width="8" height="8" fill="#222"/>
+                <rect x="42" y="74" width="8" height="8" fill="#222"/>
+                <rect x="68" y="74" width="8" height="8" fill="#222"/>
+              </svg>
+            </div>
+          </div>
+          <ol class="qr-instructions">
+            <li>Open Telegram on your phone</li>
+            <li>Go to <b>Settings > Devices > Link Desktop Device</b></li>
+            <li>Point your phone at this screen to confirm login</li>
+          </ol>
+          <button class="btn-primary mock-scan-btn" id="mockScanBtn">⚡ Simulate Instant QR Scan</button>
+        </div>
+
+        <!-- Tab 2: Phone Number -->
+        <div class="login-tab-content" id="tabPhone">
+          <div class="phone-input-group">
+            <select id="countrySelect">
+              <option value="+1">🇺🇸 USA (+1)</option>
+              <option value="+44">🇬🇧 UK (+44)</option>
+              <option value="+49">🇩🇪 Germany (+49)</option>
+              <option value="+91">🇮🇳 India (+91)</option>
+              <option value="+998">🇺🇿 Uzbekistan (+998)</option>
+              <option value="+7">🇷🇺 Russia (+7)</option>
+            </select>
+            <input type="tel" id="phoneNumberInput" placeholder="Your phone number...">
+          </div>
+          <button class="btn-primary" id="sendPhoneCodeBtn" style="width: 100%; margin-top: 14px;">Next</button>
+          
+          <div class="code-verification-box" id="codeBox" style="display: none; margin-top: 16px;">
+            <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Enter the 5-digit code sent via Telegram:</p>
+            <input type="text" id="smsCodeInput" placeholder="• • • • •" maxlength="5" style="font-size: 20px; letter-spacing: 6px; text-align: center; width: 100%;">
+            <button class="btn-primary" id="verifyCodeBtn" style="width: 100%; margin-top: 10px;">Confirm & Log In</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
